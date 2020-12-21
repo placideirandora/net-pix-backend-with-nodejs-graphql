@@ -1,0 +1,72 @@
+# Define user
+type User {
+  _id: ID
+  username: String! @unique
+  email: String!
+  password: String!
+  avatar: String
+  joinDate: String
+  favorites: [Post]
+}
+
+# Define post
+type Post {
+  _id: ID
+  title: String!
+  imageUrl: String!
+  categories: [String]!
+  description: String!
+  createdDate: String
+  likes: Int
+  createdBy: User!
+  messages: [Message]
+}
+
+# Define message
+type Message {
+  _id: ID
+  messageBody: String!
+  messageDate: String
+  messageUser: User!
+}
+
+# Define token
+type Token {
+  token: String!
+}
+
+# Define infinite posts scroll type
+type PostsPage {
+  posts: [Post]
+  hasMore: Boolean
+}
+
+# Define likes and favorites
+type LikesFaves {
+  likes: Int
+  favorites: [Post]
+}
+
+# Define queries
+type Query {
+  getCurrentUser: User
+  getPosts: [Post]!
+  getPost(postId: ID!): Post!
+  infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
+}
+
+# Define mutations
+type Mutation {
+  addPost(
+    title: String!
+    imageUrl: String!
+    categories: [String]!
+    description: String!
+    creatorId: ID!
+  ): Post!
+  registerUser(username: String!, email: String!, password: String!): Token
+  loginUser(username: String!, password: String!): Token
+  addPostComment(commentBody: String!, postId: ID!, userId: ID!): Message!
+  likePost(postId: ID!, username: String!): LikesFaves!
+  unlikePost(postId: ID!, username: String!): LikesFaves!
+}
