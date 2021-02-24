@@ -13,7 +13,7 @@ const filePath = path.join(__dirname, 'graphql/typeDefs.gql');
 const typeDefs = fs.readFileSync(filePath, 'utf-8');
 
 // Configure environment variables
-dotenv.config({ path: 'variables.env' });
+dotenv.config();
 
 // Database connection
 mongoose
