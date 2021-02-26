@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+
 const createToken = require('../helpers/generateToken');
 
 module.exports = {
@@ -10,45 +11,46 @@ module.exports = {
 
       const user = await User.findOne({ username }).populate({
         path: 'favorites',
-        model: 'Post'
+        model: 'Post',
       });
 
       return user;
     },
     getPosts: async (_, args, { Post }) => {
-      const posts = await Post.find({})
-        .sort({ createdDate: 'desc' })
-        .populate({
-          path: 'createdBy',
-          model: 'User'
-        });
+      const posts = await Post.find({}).sort({ createdDate: 'desc' }).populate({
+        path: 'createdBy',
+        model: 'User',
+      });
+
       return posts;
     },
     getPost: async (_, { postId }, { Post }) => {
       const post = await Post.findOne({ _id: postId }).populate({
         path: 'messages.messageUser',
-        model: 'User'
+        model: 'User',
       });
 
       return post;
     },
     infiniteScrollPosts: async (_, { pageNum, pageSize }, { Post }) => {
       let posts;
+
       if (pageNum === 1) {
         posts = await Post.find({})
           .sort({ createdDate: 'desc' })
           .populate({
             path: 'createdBy',
-            model: 'User'
+            model: 'User',
           })
           .limit(pageSize);
       } else {
         const skips = pageSize * (pageNum - 1);
+
         posts = await Post.find({})
           .sort({ createdDate: 'desc' })
           .populate({
             path: 'createdBy',
-            model: 'User'
+            model: 'User',
           })
           .skip(skips)
           .limit(pageSize);
@@ -59,17 +61,24 @@ module.exports = {
 
       return {
         posts,
-        hasMore
+        hasMore,
       };
-    }
+    },
   },
   Mutation: {
     registerUser: async (_, { username, email, password }, { User }) => {
-      const user = await User.findOne({ username });
+      const emailTaken = await User.findOne({ email });
+      const usernameTaken = await User.findOne({ username });
 
-      if (user) {
+      if (emailTaken) {
         throw new Error(
-          `Username - ${user.username} - already exists. Please, choose another.`
+          `Email - ${emailTaken.email} - already taken. Please, choose another.`
+        );
+      }
+
+      if (usernameTaken) {
+        throw new Error(
+          `Username - ${usernameTaken.username} - already taken. Please, choose another.`
         );
       }
 
@@ -103,14 +112,15 @@ module.exports = {
         imageUrl,
         categories,
         description,
-        createdBy: creatorId
+        createdBy: creatorId,
       }).save();
+
       return newPost;
     },
     addPostComment: async (_, { commentBody, postId, userId }, { Post }) => {
       const newComment = {
         messageBody: commentBody,
-        messageUser: userId
+        messageUser: userId,
       };
 
       const post = await Post.findOneAndUpdate(
@@ -119,7 +129,7 @@ module.exports = {
         { new: true }
       ).populate({
         path: 'messages.messageUser',
-        model: 'User'
+        model: 'User',
       });
 
       return post.messages[0];
@@ -137,7 +147,7 @@ module.exports = {
         { new: true }
       ).populate({
         path: 'favorites',
-        model: 'Post'
+        model: 'Post',
       });
 
       return { likes: post.likes, favorites: user.favorites };
@@ -155,10 +165,10 @@ module.exports = {
         { new: true }
       ).populate({
         path: 'favorites',
-        model: 'Post'
+        model: 'Post',
       });
 
       return { likes: post.likes, favorites: user.favorites };
-    }
-  }
+    },
+  },
 };
