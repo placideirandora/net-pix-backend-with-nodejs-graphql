@@ -108,7 +108,10 @@ module.exports = {
 
       const newUser = await new User({ username, email, password }).save();
 
-      return { token: createToken(newUser, process.env.SECRET, '1hr') };
+      return {
+        token: createToken(newUser, process.env.SECRET, '1d'),
+        userId: user._id,
+      };
     },
     loginUser: async (_, { username, password }, { User }) => {
       const user = await User.findOne({ username });
@@ -124,7 +127,10 @@ module.exports = {
         throw new Error(message);
       }
 
-      return { token: createToken(user, process.env.SECRET, '5hr') };
+      return {
+        token: createToken(user, process.env.SECRET, '1d'),
+        userId: user._id,
+      };
     },
     addPost: async (
       _,

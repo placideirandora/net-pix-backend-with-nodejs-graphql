@@ -30,9 +30,10 @@ type Message {
   messageUser: User!
 }
 
-# Define token
-type Token {
-  token: String!
+# Define auth type
+type AuthCredentials {
+  token: String!,
+  userId: ID!
 }
 
 # Define infinite posts scroll type
@@ -66,8 +67,8 @@ type Mutation {
     description: String!
     creatorId: ID!
   ): Post!
-  registerUser(username: String!, email: String!, password: String!): Token
-  loginUser(username: String!, password: String!): Token
+  registerUser(username: String!, email: String!, password: String!): AuthCredentials!
+  loginUser(username: String!, password: String!): AuthCredentials!
   addPostComment(commentBody: String!, postId: ID!, userId: ID!): Message!
   likePost(postId: ID!, username: String!): LikesFaves!
   unlikePost(postId: ID!, username: String!): LikesFaves!
