@@ -16,6 +16,11 @@ module.exports = {
 
       return user;
     },
+    getUserPosts: async (_, { userId }, { Post }) => {
+      const posts = await Post.find({ createdBy: userId });
+
+      return posts;
+    },
     getPosts: async (_, args, { Post }) => {
       const posts = await Post.find({}).sort({ createdDate: 'desc' }).populate({
         path: 'createdBy',
